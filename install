@@ -1,0 +1,31 @@
+#!/bin/sh
+set -e
+
+MY_DIR=$(cd $(dirname "$0"); pwd)
+CURRENT_DIR=$(pwd)
+
+echo Installing tmux configuration
+echo ------------------------------
+
+if [ ! -f ${HOME}/.tmux.conf ];
+then
+    echo Creating symlink $MY_DIR/.tmux.conf ${HOME}/.tmux.conf
+    ln -s $MY_DIR/.tmux.conf ${HOME}/.tmux.conf
+fi
+
+echo Updating 'tmux-mem-cpu-load' submodule
+cd $MY_DIR
+git submodule init
+git submodule update
+
+cd vendor/tmux-mem-cpu-load
+echo Building 'tmux-mem-cpu-load'
+cmake .
+make
+
+echo Installing 'tmux-mem-cpu-load'
+sudo make install
+
+cd $CURRENT_DIR
+
+echo Finished tmux configuration install.
